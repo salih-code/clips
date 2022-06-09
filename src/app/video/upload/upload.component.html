@@ -1,0 +1,76 @@
+<section class="container mx-auto my-8 bg-secondary p-6">
+  <div class="rounded relative flex flex-col">
+    <app-alert *ngIf="showAlert" [color]="alertColor">
+      <p>{{ alertMessage }}</p>
+      <p *ngIf="showPercentage">{{ percentage | percent }}</p>
+    </app-alert>
+    <ng-container *ngIf="!nextStep; else uploadFormControl">
+      <div class="font-bold mb-6">Upload Video</div>
+      <!-- Upload Dropbox -->
+      <div
+        appEventBlocker
+        (dragend)="isDragOver = false"
+        (dragover)="isDragOver = true"
+        (dragenter)="isDragOver = true"
+        (dragleave)="isDragOver = false"
+        (mouseleave)="isDragOver = false"
+        (drop)="storeClip($event)"
+        [ngClass]="{
+          'bg-indigo-400 border-indigo-400 border-solid': isDragOver
+        }"
+        class="w-full px-10 py-40 rounded text-center cursor-pointer border border-dashed border-gray-400 transition duration-500 hover:text-white hover:bg-indigo-400 hover:border-indigo-400 hover:border-solid text-xl"
+      >
+        <h5>Drop your file here (mp4 only!)</h5>
+      </div>
+      <input
+        type="file"
+        accept="video/mp4"
+        class="mt-4"
+        (change)="storeClip($event)"
+      />
+    </ng-container>
+    <!-- Video Editor -->
+    <ng-template #uploadFormControl>
+      <!-- Form -->
+      <form [formGroup]="uploadForm" (ngSubmit)="uploadFile()">
+        <!-- Screenshots -->
+        <h2 class="mb-4 text-xl">Select a Thumbnail</h2>
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          <div class="border-8 cursor-pointer border-transparent">
+            <img [src]="thumbnailURL | safeURL" />
+          </div>
+        </div>
+        <input
+          type="file"
+          accept="image/jpeg"
+          class="mt-4"
+          (change)="storeThumbnail($event)"
+        />
+
+        <!-- Title -->
+        <div class="mt-4">
+          <label class="block text-xl mb-4">Title</label>
+          <app-input
+            [control]="title"
+            placeholder="Enter Title"
+            fieldName="Title"
+          ></app-input>
+        </div>
+
+        <div class="mt-4 text-right">
+          <button
+            type="submit"
+            class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm rounded-md text-white bg-indigo-600 focus:outline-none"
+            [disabled]="!publishEnable"
+            [ngClass]="{
+              'opacity-50': !publishEnable,
+              'hover:bg-indigo-700': publishEnable
+            }"
+          >
+            Publish
+          </button>
+        </div>
+      </form>
+    </ng-template>
+  </div>
+</section>
